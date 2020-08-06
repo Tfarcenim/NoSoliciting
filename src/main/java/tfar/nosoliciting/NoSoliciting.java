@@ -1,4 +1,4 @@
-package com.tfar.nosoliciting;
+package tfar.nosoliciting;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
@@ -19,8 +19,6 @@ import net.minecraftforge.fml.config.ModConfig;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
@@ -62,17 +60,19 @@ public class NoSoliciting {
                     IntStream.range(startX, endX)
                             .forEach(x -> chunks.add(world.getChunk(x, z))));
 
+    boolean isCanceled =             chunks
+            .stream()
+            .filter(Chunk.class::isInstance)
+            .flatMap(c -> ((Chunk) c).getTileEntityMap().values().stream())
+            .filter(SignTileEntity.class::isInstance)
+            .flatMap(tileEntity -> Arrays.stream(((SignTileEntity) tileEntity).signText))
+            .map(ITextComponent::getString)
+            .map(pattern::matcher)
+            .anyMatch(Matcher::matches);
 
-    event.setCanceled(
-            chunks
-                    .stream()
-                    .filter(Chunk.class::isInstance)
-                    .flatMap(c -> ((Chunk) c).getTileEntityMap().values().stream())
-                    .filter(SignTileEntity.class::isInstance)
-                    .flatMap(tileEntity -> Arrays.stream(((SignTileEntity) tileEntity).signText))
-                    .map(ITextComponent::getString)
-                    .map(pattern::matcher)
-                    .anyMatch(Matcher::matches)
-    );
+    if (isCanceled) {
+      System.out.println("canceled wandering trader spawn");
+      event.setCanceled(true);
+    }
   }
 }
