@@ -12,7 +12,6 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -35,11 +34,13 @@ public class NoSoliciting {
     MinecraftForge.EVENT_BUS.addListener(this::wanderingTraderSpawn);
   }
 
-  // You can use SubscribeEvent and let the Event Bus discover methods to call
-  @SubscribeEvent
-  public void wanderingTraderSpawn(LivingSpawnEvent.SpecialSpawn event) {
+  private void wanderingTraderSpawn(LivingSpawnEvent.SpecialSpawn event) {
     LivingEntity entity = event.getEntityLiving();
-    if (!(entity instanceof WanderingTraderEntity) || event.getSpawnReason() != SpawnReason.NATURAL) return;
+    if (!(entity instanceof WanderingTraderEntity)) {
+      return;
+    } else if (event.getSpawnReason() != SpawnReason.EVENT) {
+      return;
+    }
     World world = entity.world;
     BlockPos eventPos = entity.getPosition();
 
