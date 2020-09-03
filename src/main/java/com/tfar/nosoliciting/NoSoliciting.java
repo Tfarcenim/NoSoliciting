@@ -41,7 +41,7 @@ public class NoSoliciting {
   @SubscribeEvent
   public void wanderingTraderSpawn(LivingSpawnEvent.SpecialSpawn event) {
     LivingEntity entity = event.getEntityLiving();
-    if (!(entity instanceof WanderingTraderEntity) || event.getSpawnReason() != SpawnReason.NATURAL) return;
+    if (!(entity instanceof WanderingTraderEntity) || event.getSpawnReason() != SpawnReason.EVENT) return;
     World world = entity.world;
     BlockPos eventPos = entity.getPosition();
 
